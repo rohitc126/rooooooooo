@@ -1,0 +1,57 @@
+USE [CALYX_Test]
+GO
+
+/****** Object:  StoredProcedure [dbo].[USP_Select_BS_Notes]    Script Date: 5/27/2023 4:01:43 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+ 
+--- Created By   :Rohit Chaurasiya
+--- Created Date : 19/05/2023
+--- Description  : Select Balance Sheet Data: 2 To 3 Notes.  
+---   Select * from FA_Tbl_BS_NOTES_TWO_THREE='2016-2017'  
+---- USP_Select_BS_Notes   '2022-2023' , 'CO00000001' 
+---- USP_Select_BS_Notes '2021-2022'   ,'CO00000002'
+---- USP_Select_BS_Notes  '2023-2024' ,'CO00000001'  
+-----=================================================================  
+ALTER PROC [dbo].[USP_Select_BS_Notes] 
+@FINANCIAL_YR VARCHAR(10),
+@COMP_NAME VARCHAR(50)
+AS  
+BEGIN  
+
+DECLARE @COUNT INT
+IF (@COMP_NAME='CO00000001' ) 
+BEGIN  
+ 
+    SELECT @COUNT=COUNT(*) FROM  CALYX_TEST.DBO .FA_TBL_BS_NOTES_TWO_THREE WHERE FY=@FINANCIAL_YR  
+
+	IF( ISNULL( @COUNT ,0) >0)
+	BEGIN
+         SELECT BS_ID, NOTE,FY,ITEMS,QTY,RATE  FROM CALYX_TEST.DBO .FA_TBL_BS_NOTES_TWO_THREE AS A WHERE STATUS=1 AND FY=@FINANCIAL_YR 
+	END
+	ELSE
+	BEGIN
+	    SELECT DISTINCT   0 AS BS_ID, NOTE,@FINANCIAL_YR AS FY,ITEMS, 0 AS  QTY, 0.00 AS RATE  FROM CALYX_TEST.DBO .FA_TBL_BS_NOTES_TWO_THREE AS A WHERE STATUS=1 
+	END
+END  
+ELSE IF( @COMP_NAME='CO00000002')
+BEGIN  
+     SELECT  BS_ID,NOTE, FY,ITEMS,QTY,RATE  FROM SGX_TEST.DBO. FA_TBL_BS_NOTES_TWO_THREE WHERE STATUS=1 AND FY=@FINANCIAL_YR
+END 
+   
+END
+
+
+
+
+
+GO
+
+
